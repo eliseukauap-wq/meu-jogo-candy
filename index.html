@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mini Candy Crush</title>
+<style>
+  body {
+    background: #222;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+  }
+
+  h1 {
+    margin-top: 10px;
+  }
+
+  #board {
+    display: grid;
+    grid-template-columns: repeat(8, 60px);
+    grid-template-rows: repeat(8, 60px);
+    gap: 4px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .cell {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .red { background: #e74c3c; }
+  .blue { background: #3498db; }
+  .green { background: #2ecc71; }
+  .yellow { background: #f1c40f; }
+  .purple { background: #9b59b6; }
+
+</style>
+</head>
+<body>
+
+<h1>🍬 Mini Candy Crush</h1>
+<p>Pontos: <span id="score">0</span></p>
+
+<div id="board"></div>
+
+<script>
+const board = document.getElementById("board");
+const scoreDisplay = document.getElementById("score");
+
+const width = 8;
+const colors = ["red", "blue", "green", "yellow", "purple"];
+let squares = [];
+let score = 0;
+
+let firstSelected = null;
+
+// criar tabuleiro
+function createBoard() {
+  for (let i = 0; i < width * width; i++) {
+    const square = document.createElement("div");
+    square.classList.add("cell");
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    square.classList.add(color);
+    square.setAttribute("data-id", i);
+    board.appendChild(square);
+    squares.push(square);
+
+    square.addEventListener("click", () => selectSquare(square));
+  }
+}
+
+// selecionar e trocar
+function selectSquare(square) {
+  if (!firstSelected) {
+    firstSelected = square;
+    square.style.border = "3px solid white";
+  } else {
+    swapSquares(firstSelected, square);
+    firstSelected.style.border = "none";
+    firstSelected = null;
+    checkMatches();
+  }
+}
+
+// troca
+function swapSquares(a, b) {
+  const colorA = colors.find(c => a.classList.contains(c));
+  const colorB = colors.find(c => b.classList.contains(c));
+
+  a.classList.remove(colorA);
+  b.classList.remove(colorB);
+
+  a.classList.add(colorB);
+  b.classList.add(colorA);
+}
+
+// verificar combinações
+function checkMatches() {
+  // linhas
+  for (let i = 0; i < 64; i++) {
+    const rowOfThree = [i, i+1, i+2];
+    const decidedColor = colors.find(c => squares[i].classList.contains(c));
+
+    if (i % 8 > 5) continue;
+
+    if (rowOfThree.every(index => squares[index].classList.contains(decidedColor))) {
+      rowOfThree.forEach(index => {
+        squares[index].className = "cell";
+      });
+      score += 10;
+    }
+  }
+
+  // colunas
+  for (let i = 0; i < 48; i++) {
+    const columnOfThree = [i, i+8, i+16];
+    const decidedColor = colors.find(c => squares[i].classList.contains(c));
+
+    if (columnOfThree.every(index => squares[index].classList.contains(decidedColor))) {
+      columnOfThree.forEach(index => {
+        squares[index].className = "cell";
+      });
+      score += 10;
+    }
+  }
+
+  scoreDisplay.innerText = score;
+  moveDown();
+}
+
+// fazer cair
+function moveDown() {
+  for (let i = 0; i < 56; i++) {
+    if (squares[i + 8].className === "cell") {
+      squares[i + 8].className = squares[i].className;
+      squares[i].className = "cell";
+
+      const firstRow = [0,1,2,3,4,5,6,7];
+      if (firstRow.includes(i)) {
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        squares[i].classList.add("cell");
+        squares[i].classList.add(randomColor);
+      }
+    }
+  }
+}
+
+// loop do jogo
+setInterval(() => {
+  checkMatches();
+}, 500);
+
+createBoard();
+</script>
+
+</body>
+</html>
