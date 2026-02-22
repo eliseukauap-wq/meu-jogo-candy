@@ -11,12 +11,13 @@
     text-align: center;
   }
 
- .board {
-  display: grid;
-  grid-template-columns: repeat(5, 40px);
-  grid-template-rows: repeat(5, 40px);
-  gap: 5px; /* opcional, só pra espaçamento */
+.board {
+  display: grid; /* ESSENCIAL */
+  grid-template-columns: repeat(5, 40px); /* 5 colunas de 40px cada */
+  grid-template-rows: repeat(5, 40px);    /* 5 linhas de 40px cada */
+  gap: 5px; /* espaçamento entre as células, opcional */
 }
+
 .cell {
   width: 40px;
   height: 40px;
